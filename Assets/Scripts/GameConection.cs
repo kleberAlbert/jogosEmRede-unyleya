@@ -6,14 +6,16 @@ using UnityEngine.UI;
 public class GameConection : MonoBehaviourPunCallbacks
 {
     public Text chatLog;
-    private string myNickName; // Variável para garantir que o valor não se perca
+    public string playerPrefabName = "GamePlayer"; // Nome exato do Prefab dentro da pasta Assets/Resources/
+  
+    public Vector3 spawnPosition = new Vector3(292f, 192f, 31f);
+
+    private string myNickName;
 
     private void Start()
     {
-        // 1. Gera o nome localmente
+        // 1. Gera o apelido
         myNickName = "Koelho_" + Random.Range(1000, 9999);
-
-        // 2. Aplica ao Photon e atualiza a UI
         PhotonNetwork.NickName = myNickName;
 
         if (chatLog != null)
@@ -21,67 +23,63 @@ public class GameConection : MonoBehaviourPunCallbacks
             chatLog.text = myNickName + " - Conectando ao servidor...";
         }
 
-        // 3. Conecta
+        // 2. Conecta aos servidores do Photon
         PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
     {
         base.OnConnectedToMaster();
-        
-        // Reforça a definição do nome no servidor Master
         PhotonNetwork.NickName = myNickName;
 
-        if (chatLog != null)
-            chatLog.text = "Conectado ao servidor!";
-
+        if (chatLog != null) chatLog.text = "Conectado! Entrando no Lobby...";
+        
         if (!PhotonNetwork.InLobby)
         {
-            if (chatLog != null) chatLog.text = "Entrando no Lobby...";
             PhotonNetwork.JoinLobby();
-        }
-        else
-        {
-            if (chatLog != null) chatLog.text = "Já está no Lobby!";
         }
     }
 
     public override void OnJoinedLobby()
     {
-        if (chatLog != null) chatLog.text = "Entrando na Sala de Atividade 4...";
+        if (chatLog != null) chatLog.text = "Entrando na Sala 'Atividade 4'...";
         PhotonNetwork.JoinRoom("Atividade 4");    
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        if (chatLog != null) chatLog.text = "Sala não encontrada, criando a sala...";
+        if (chatLog != null) chatLog.text = "Sala não encontrada, criando sala...";
         PhotonNetwork.CreateRoom("Atividade 4", new RoomOptions { MaxPlayers = 10 });
     }
 
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.NickName = myNickName;
-        // Garante a leitura do NickName da variável caso o Photon demore para atualizar a propriedade LocalPlayer
-        string localNick = !string.IsNullOrEmpty(PhotonNetwork.NickName) 
-            ? PhotonNetwork.NickName 
-            : myNickName;
+        string localNick = !string.IsNullOrEmpty(PhotonNetwork.NickName) ? PhotonNetwork.NickName : myNickName;
 
         if (chatLog != null)
-        {  
-            if (localNick != null)
-                chatLog.text = "Entrou na sala de Atividade 4! UserName = " + localNick;
-            else
-                Debug.Log("NickName não definido, usando valor local: " + myNickName);
-                chatLog.text = "Entrou na sala de Atividade 4! UserName não definido.";
+        {
+            chatLog.text = "Entrou na sala " + PhotonNetwork.CurrentRoom.Name + "! UserName: " + localNick;
         }
-        chatLog.text = "Sala " + PhotonNetwork.CurrentRoom.Name;
+
         Debug.Log("NickName confirmado: " + localNick);
-        
+
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            PhotonNetwork.Instantiate(playerPrefabName, spawnPosition, Quaternion.identity);
+        }
     }
+
     public override void OnErrorInfo(ErrorInfo errorInfo)
     {
-        Debug.LogError("Erro de conexão: " + errorInfo.Info);
+        Debug.LogError("Erro de conexão Photon: " + errorInfo.Info);
         if (chatLog != null)
-            chatLog.text = "Erro de conexão: " + errorInfo.Info;
+            chatLog.text = "Erro: " + errorInfo.Info;
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.LogWarning("Desconectado do Photon. Motivo: " + cause);
+        if (chatLog != null)
+            chatLog.text = "Desconectado: " + cause.ToString();
     }
 }

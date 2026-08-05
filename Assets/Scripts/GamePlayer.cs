@@ -7,14 +7,17 @@ public class GamePlayer : MonoBehaviour
     public float horizontalInput;
     public float verticalInput;
     public float speed_x = 150.0f;
-    public float speed_y = 3.0f;
+    public float speed_y = 30.0f;
     public PhotonView photonView;
     public GameObject gun;
     public Transform bulletSpawnPoint;
     public Rigidbody rbody;
+    public float bulletSpeed = 40f;
+    private Collider playerCollider;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playerCollider = GetComponent<Collider>();
     }
 
     // Update is called once per frame
@@ -37,8 +40,23 @@ public class GamePlayer : MonoBehaviour
     }
     [PunRPC]
     public void Fire(PhotonMessageInfo info)
+{
+    Debug.Log("Fogo hehe!");
+    
+    GameObject bullet = Instantiate(gun, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+
+    Collider bulletCollider = bullet.GetComponent<Collider>();
+    if (playerCollider != null && bulletCollider != null)
     {
-        Debug.Log("Firing!");
-        float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
+        Physics.IgnoreCollision(bulletCollider, playerCollider);
     }
+
+    Rigidbody rb = bullet.GetComponent<Rigidbody>();
+    if (rb != null)
+    {
+        rb.linearVelocity = -transform.forward * bulletSpeed;
+    }
+
+    Destroy(bullet, 3f);
+}
 }

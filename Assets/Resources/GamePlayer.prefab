@@ -220,7 +220,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: -8143010014049239379}
   - component: {fileID: 1438319865406194656}
   m_Layer: 0
-  m_Name: Player
+  m_Name: GamePlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -258,7 +258,7 @@ Transform:
   m_GameObject: {fileID: 4592639447427418240}
   serializedVersion: 2
   m_LocalRotation: {x: -0.01117274, y: -0.6248684, z: 0.013334449, w: 0.78053635}
-  m_LocalPosition: {x: 242.61917, y: 0, z: 1031.4862}
+  m_LocalPosition: {x: 311.14944, y: 0, z: 1157.145}
   m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -361,11 +361,11 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   speed_x: 150
-  speed_y: 3
+  speed_y: 30
   photonView: {fileID: 1438319865406194656}
-  gun: {fileID: 3484284243108367137}
-  bulletSpawnPoint: {fileID: 1887282883891492244, guid: 50143b4a3cace484ebe9e3df9b62f490, type: 3}
-  rbody: {fileID: 4155751607130862419}
+  gun: {fileID: 4831259142591282553, guid: 50143b4a3cace484ebe9e3df9b62f490, type: 3}
+  bulletSpawnPoint: {fileID: 2137117984179819412}
+  bulletSpeed: 40
 --- !u!54 &4155751607130862419
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -388,7 +388,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
